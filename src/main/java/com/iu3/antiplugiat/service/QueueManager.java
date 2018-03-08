@@ -97,10 +97,10 @@ public class QueueManager {
         ArrayList<TermInfo> secondT = termManager.getTermInfo(second);
         ArrayList<TermInfo> lastT = termManager.getTermInfo(last);
 
-        if (interTerms.size() ==18) {
+        if (interTerms.size() == 196) {
             System.out.println("debug");
         }
-        ArrayList<TermInfo> firstInterc = intercept(firstT, secondT, nearCond());
+        ArrayList<TermInfo> firstInterc = intercept(firstT, secondT, nearCond(3));
 
         String prev = second;
         ArrayList<TermInfo> prevT = secondT;
@@ -109,33 +109,34 @@ public class QueueManager {
         ArrayList<TermInfo> prevInterc = firstInterc;
         ArrayList<TermInfo> curInterc;
 
-        if (queue.size() > 3) {
+        if (queue.size() > 2) {
             for (String cur : queue.subList(2, queue.size())) {
                 curT = termManager.getTermInfo(cur);
-                curInterc = intercept(prevT, curT, nearCond());
+                curInterc = intercept(prevT, curT, nearCond(3));
                 interTerms.addAll(intercept(curInterc, prevInterc, andCond()));
 
                 prevT = curT;
                 prevInterc = curInterc;
             }
-            curInterc = intercept(firstT, lastT, nearCond());
+            curInterc = intercept(firstT, lastT, nearCond(queue.size()));
             interTerms.addAll(intercept(curInterc, prevInterc, andCond()));
             interTerms.addAll(intercept(curInterc, firstInterc, andCond()));
         } else {
-            interTerms.addAll(intercept(firstT, lastT, nearCond()));
+            interTerms.addAll(intercept(firstT, lastT, nearCond(queue.size())));
         }
         termManager.closeConnection();
     }
-//заметка: переделать все включения termInfo на TreeSet?
-    //функция находит все одинаковые включения двух выборок по документу и позиции
-    //эти включения определяют набор позиций среднего слова, удовлетворяющих обеим выборкам
 
     public BiPredicate<TermInfo, TermInfo> andCond() {
         return (t1, t2) -> t1.equals(t2);
     }
 
-    public BiPredicate<TermInfo, TermInfo> nearCond() {
-        return (t1, t2) -> t1.getDocID() == t2.getDocID() && withinRange(t1, t2, 3);
+    public BiPredicate<TermInfo, TermInfo> nearCond(int x) {
+        return (t1, t2) -> t1.getDocID() == t2.getDocID() && withinRange(t1, t2, x);
+    }
+
+    public Predicate<Integer> boundCheck(int size) {
+        return t -> t + 1 < size;
     }
 //переделать TreeSet на ArrayList, прикинуть, что делать со скипами если cond=near. 
 
@@ -156,22 +157,30 @@ public class QueueManager {
                 interc.add(t1);
                 interc.add(t2);
 
-                if ((i + 1) < mass1.size()) {
+                if (boundCheck(mass1.size()).test(i)) {
                     TermInfo nxt1 = mass1.get(i + 1);
                     while (cond.test(nxt1, t2)) {
                         interc.add(nxt1);
                         i++;
-                        nxt1 = mass1.get(i + 1);
-                        
+                        if (boundCheck(mass1.size()).test(i)) {
+                            nxt1 = mass1.get(i + 1);
+                        } else {
+                            break;
+                        }
                     }
                 }
-                if ((j + 1) < mass2.size()) {
+
+                if (boundCheck(mass2.size()).test(j)) {
+
                     TermInfo nxt2 = mass2.get(j + 1);
                     while (cond.test(nxt2, t1)) {
                         interc.add(nxt2);
                         j++;
-                        nxt2 = mass2.get(j + 1);
-                       
+                        if (boundCheck(mass2.size()).test(j)) {
+                            nxt2 = mass2.get(j + 1);
+                        } else {
+                            break;
+                        }
                     }
                 }
                 i++;
@@ -179,29 +188,30 @@ public class QueueManager {
             } else {
 //
                 if (t2.compareTo(t1) < 0) {
-                    Predicate<Integer> rangeCheck=t->(t+1)<mass2.size();
-                    if (rangeCheck.test(j)) {
+
+                    if (boundCheck(mass2.size()).test(j)) {
                         TermInfo next = mass2.get(j + 1);
                         while (next.compareTo(t1) < 0 && !cond.test(next, t1)) {
                             j++;
-                            if (rangeCheck.test(j))
+                            if (boundCheck(mass2.size()).test(j)) {
                                 next = mass2.get(j + 1);
-                            else
+                            } else {
                                 break;
+                            }
                         }
                     }
                     j++;
 
                 } else {
-                    Predicate<Integer> rangeCheck=t->(t+1)<mass1.size();
-                    if (rangeCheck.test(i)) {
+                    if (boundCheck(mass1.size()).test(i)) {
                         TermInfo next = mass1.get(i + 1);
                         while (next.compareTo(t2) < 0 && !cond.test(next, t2)) {
                             i++;
-                            if (rangeCheck.test(i))
+                            if (boundCheck(mass1.size()).test(i)) {
                                 next = mass1.get(i + 1);
-                            else
+                            } else {
                                 break;
+                            }
                         }
                     }
                     i++;

@@ -172,9 +172,9 @@ public class DocManager {
 
     private void analizeDocument() {
         HashMap<Integer, Integer> interNums = new HashMap<>();
-        for (int i = 0; i < termsQueue.size(); i += 4) {
-            if ((termsQueue.size() - i - 4) > 0) {
-                queueManager.setQueue(termsQueue.subList(i, i + 4));
+        for (int i = 0; i < termsQueue.size(); i += 7) {
+            if ((termsQueue.size() - i - 7) > 0) {
+                queueManager.setQueue(termsQueue.subList(i, i + 7));
             } else {
                 queueManager.setQueue(termsQueue.subList(i, termsQueue.size()));
             }
