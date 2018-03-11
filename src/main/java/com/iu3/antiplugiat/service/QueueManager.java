@@ -87,44 +87,33 @@ public class QueueManager {
         interTerms.clear();
     }
 
+    //заметка - подумать о реализации.
+    //Предыдущий: с двойным проходом или Сейчас:конвертация TreeSet в ArrayList на каждой итерации;
+    //Описать алгоритм востановления по последней выборке queueInterc. Запомнить все выборки до, как пары значений. 
+    //По последней выборке востанавливать эти пары, пока таковые находятся в памяти, и записывать в список перекрытий
+    //функция перекрытия возвращает все значения из диапазона near - проверить валидность
     private void findIntercections() {
 
-        String first = queue.get(0);
-        String second = queue.get(1);
-        String last = queue.get(queue.size() - 1);
-
-        ArrayList<TermInfo> firstT = termManager.getTermInfo(first);
-        ArrayList<TermInfo> secondT = termManager.getTermInfo(second);
-        ArrayList<TermInfo> lastT = termManager.getTermInfo(last);
-
-        if (interTerms.size() == 196) {
-            System.out.println("debug");
-        }
-        ArrayList<TermInfo> firstInterc = intercept(firstT, secondT, nearCond(3));
-
-        String prev = second;
-        ArrayList<TermInfo> prevT = secondT;
         ArrayList<TermInfo> curT;
+        HashSet<TreeSet<TermInfo>> nodeMass=new HashSet<>();
+        TreeSet<TermInfo> queueInterc = new TreeSet<>();
 
-        ArrayList<TermInfo> prevInterc = firstInterc;
-        ArrayList<TermInfo> curInterc;
+        for (String cur : queue) {
+            curT = termManager.getTermInfo(cur);
 
-        if (queue.size() > 2) {
-            for (String cur : queue.subList(2, queue.size())) {
-                curT = termManager.getTermInfo(cur);
-                curInterc = intercept(prevT, curT, nearCond(3));
-                interTerms.addAll(intercept(curInterc, prevInterc, andCond()));
-
-                prevT = curT;
-                prevInterc = curInterc;
+            if (queueInterc.isEmpty()) {
+                queueInterc.addAll(curT);
+            } else {
+                queueInterc = intercept(new ArrayList(queueInterc), curT, nearCond(3));
+                nodeMass.add(queueInterc);
             }
-            curInterc = intercept(firstT, lastT, nearCond(queue.size()));
-            interTerms.addAll(intercept(curInterc, prevInterc, andCond()));
-            interTerms.addAll(intercept(curInterc, firstInterc, andCond()));
-        } else {
-            interTerms.addAll(intercept(firstT, lastT, nearCond(queue.size())));
         }
+        interTerms.addAll(queueInterc);
+
         termManager.closeConnection();
+    }
+    private void retrieveSequence(HashSet<TreeSet<TermInfo>> nodeMass){
+        
     }
 
     public BiPredicate<TermInfo, TermInfo> andCond() {
@@ -138,9 +127,9 @@ public class QueueManager {
     public Predicate<Integer> boundCheck(int size) {
         return t -> t + 1 < size;
     }
-//переделать TreeSet на ArrayList, прикинуть, что делать со скипами если cond=near. 
 
-    private ArrayList<TermInfo> intercept(ArrayList<TermInfo> mass1, ArrayList<TermInfo> mass2,
+//заметка: подумать как свести к минимуму необходимости конвертаций treeset в arraylist
+    private TreeSet<TermInfo> intercept(ArrayList<TermInfo> mass1, ArrayList<TermInfo> mass2,
             BiPredicate<TermInfo, TermInfo> cond) {
 
         TreeSet<TermInfo> interc = new TreeSet<>();
@@ -219,7 +208,7 @@ public class QueueManager {
             }
         }
 
-        return new ArrayList<>(interc);
+        return interc;
     }
 
     private boolean withinRange(TermInfo term1, TermInfo term2, int x) {

@@ -170,11 +170,11 @@ public class DocManager {
 
     }
 
-    private void analizeDocument() {
+    private void analizeDocument(int queueSize) {
         HashMap<Integer, Integer> interNums = new HashMap<>();
-        for (int i = 0; i < termsQueue.size(); i += 7) {
-            if ((termsQueue.size() - i - 7) > 0) {
-                queueManager.setQueue(termsQueue.subList(i, i + 7));
+        for (int i = 0; i < termsQueue.size(); i += queueSize) {
+            if ((termsQueue.size() - i - queueSize) > 0) {
+                queueManager.setQueue(termsQueue.subList(i, i + queueSize));
             } else {
                 queueManager.setQueue(termsQueue.subList(i, termsQueue.size()));
             }
@@ -195,7 +195,7 @@ public class DocManager {
     }
 
     public double getuniqueAttr() {
-        analizeDocument();
+        analizeDocument(4);
         return uniqueAttr;
     }
 
