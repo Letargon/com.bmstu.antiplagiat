@@ -44,6 +44,7 @@ public class DocManager {
 
         this.docDir = docDir;
         termManager.addDoc(docDir);
+        
         docId = termManager.getDocId(docDir);
         termManager.closeConnection();
 
@@ -61,7 +62,6 @@ public class DocManager {
         if (fileFormat.equals("doc")) {
             termsQueue = getTockensFromDoc();
         }
-        termsQueue.forEach(t -> System.out.println(t));
 
     }
 
@@ -195,7 +195,12 @@ public class DocManager {
     }
 
     public double getuniqueAttr() {
+
+        long start = System.nanoTime();
+
         analizeDocument(4);
+
+        System.out.println("Time of analizing" + (System.nanoTime() - start));
         return uniqueAttr;
     }
 

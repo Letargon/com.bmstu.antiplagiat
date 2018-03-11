@@ -7,7 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-
+//не поддерживает rtf
 public class MainApp extends Application {
     
 

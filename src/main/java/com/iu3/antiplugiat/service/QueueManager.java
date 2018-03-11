@@ -7,10 +7,10 @@ package com.iu3.antiplugiat.service;
 
 import com.iu3.antiplugiat.model.TermInfo;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -95,29 +95,48 @@ public class QueueManager {
     private void findIntercections() {
 
         ArrayList<TermInfo> curT;
-        HashSet<TreeSet<TermInfo>> nodeMass=new HashSet<>();
-        TreeSet<TermInfo> queueInterc = new TreeSet<>();
+        TreeMap<TermInfo, Boolean> queueInterc = new TreeMap<>();
 
-        for (String cur : queue) {
+        for (String cur : queue.subList(0, queue.size() - 1)) {
             curT = termManager.getTermInfo(cur);
 
             if (queueInterc.isEmpty()) {
-                queueInterc.addAll(curT);
+                curT.forEach(t -> queueInterc.put(t, false));
             } else {
-                queueInterc = intercept(new ArrayList(queueInterc), curT, nearCond(3));
-                nodeMass.add(queueInterc);
+                queueInterc.putAll(intercept(new ArrayList(queueInterc.keySet()), curT, false));
             }
         }
-        interTerms.addAll(queueInterc);
+        curT = termManager.getTermInfo(queue.get(queue.size() - 1));
+        queueInterc.putAll(intercept(new ArrayList(queueInterc.keySet()), curT, true));
+
+        queueInterc.forEach((k, v) -> {
+            if (v) {
+                interTerms.add(k);
+            }
+        });
 
         termManager.closeConnection();
     }
-    private void retrieveSequence(HashSet<TreeSet<TermInfo>> nodeMass){
-        
-    }
 
-    public BiPredicate<TermInfo, TermInfo> andCond() {
-        return (t1, t2) -> t1.equals(t2);
+    private int iterateAndProccess(int pos, ArrayList<TermInfo> mass, TermInfo oth, BiPredicate<TermInfo, TermInfo> cond,
+            boolean prev, boolean add, TreeMap<TermInfo, Boolean> res) {
+
+        if (boundCheck(mass.size()).test(pos)) {
+            TermInfo nxt = mass.get(pos + 1);
+            while (cond.test(nxt, oth)) {
+                if (add) {
+                    res.put(nxt, prev);
+                    res.put(oth,true);
+                }
+                pos++;
+                if (boundCheck(mass.size()).test(pos)) {
+                    nxt = mass.get(pos + 1);
+                } else {
+                    break;
+                }
+            }
+        }
+        return pos;
     }
 
     public BiPredicate<TermInfo, TermInfo> nearCond(int x) {
@@ -129,10 +148,9 @@ public class QueueManager {
     }
 
 //заметка: подумать как свести к минимуму необходимости конвертаций treeset в arraylist
-    private TreeSet<TermInfo> intercept(ArrayList<TermInfo> mass1, ArrayList<TermInfo> mass2,
-            BiPredicate<TermInfo, TermInfo> cond) {
+    private TreeMap<TermInfo, Boolean> intercept(ArrayList<TermInfo> mass1, ArrayList<TermInfo> mass2, boolean last) {
 
-        TreeSet<TermInfo> interc = new TreeSet<>();
+        TreeMap<TermInfo, Boolean> interc = new TreeMap<>();
 
         int i = 0;
         int j = 0;
@@ -141,68 +159,26 @@ public class QueueManager {
 
             TermInfo t1 = mass1.get(i);
             TermInfo t2 = mass2.get(j);
-            if (cond.test(t1, t2)) {
+            if (nearCond(3).test(t1, t2)) {
 
-                interc.add(t1);
-                interc.add(t2);
+                interc.put(t1, true);
 
-                if (boundCheck(mass1.size()).test(i)) {
-                    TermInfo nxt1 = mass1.get(i + 1);
-                    while (cond.test(nxt1, t2)) {
-                        interc.add(nxt1);
-                        i++;
-                        if (boundCheck(mass1.size()).test(i)) {
-                            nxt1 = mass1.get(i + 1);
-                        } else {
-                            break;
-                        }
-                    }
-                }
+                interc.put(t2, last);
 
-                if (boundCheck(mass2.size()).test(j)) {
+                i = iterateAndProccess(i, mass1, t2, nearCond(3), true, true, interc);
 
-                    TermInfo nxt2 = mass2.get(j + 1);
-                    while (cond.test(nxt2, t1)) {
-                        interc.add(nxt2);
-                        j++;
-                        if (boundCheck(mass2.size()).test(j)) {
-                            nxt2 = mass2.get(j + 1);
-                        } else {
-                            break;
-                        }
-                    }
-                }
+                j = iterateAndProccess(j, mass2, mass1.get(i), nearCond(3), last, true, interc);
+
                 i++;
                 j++;
             } else {
-//
-                if (t2.compareTo(t1) < 0) {
-
-                    if (boundCheck(mass2.size()).test(j)) {
-                        TermInfo next = mass2.get(j + 1);
-                        while (next.compareTo(t1) < 0 && !cond.test(next, t1)) {
-                            j++;
-                            if (boundCheck(mass2.size()).test(j)) {
-                                next = mass2.get(j + 1);
-                            } else {
-                                break;
-                            }
-                        }
-                    }
+                BiPredicate<TermInfo, TermInfo> compare = (a, b) -> a.compareTo(b) < 0;
+                if (compare.test(t2, t1)) {//t2<t1
+                    j = iterateAndProccess(j, mass2, t1, nearCond(3).negate().and(compare), false, false, interc);
                     j++;
 
                 } else {
-                    if (boundCheck(mass1.size()).test(i)) {
-                        TermInfo next = mass1.get(i + 1);
-                        while (next.compareTo(t2) < 0 && !cond.test(next, t2)) {
-                            i++;
-                            if (boundCheck(mass1.size()).test(i)) {
-                                next = mass1.get(i + 1);
-                            } else {
-                                break;
-                            }
-                        }
-                    }
+                    i = iterateAndProccess(i, mass1, t2, nearCond(3).negate().and(compare), false, false, interc);
                     i++;
                 }
             }
@@ -215,11 +191,6 @@ public class QueueManager {
 
         return (Math.abs(term1.getPos() - term2.getPos()) < x);
 
-    }
-
-    public HashMap<TermInfo, Integer> getMinQDistance() {
-        //TODO
-        return null;
     }
 
 }
