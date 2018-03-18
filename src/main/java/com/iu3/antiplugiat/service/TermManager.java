@@ -64,11 +64,11 @@ public class TermManager {
             }
 
             Statement stmt = connect.createStatement();
-
+            //максимальная длина пути обработка исключения?
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS DOCS"
                     + "("
                     + "        DOC_ID SERIAL,"
-                    + "        PATH VARCHAR(50) NOT NULL UNIQUE,"
+                    + "        PATH VARCHAR(255) NOT NULL UNIQUE,"
                     + "        PRIMARY KEY (DOC_ID)"
                     + ");");
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS TERMS"
@@ -139,10 +139,10 @@ public class TermManager {
             if (!connect.isValid(0)) {
                 createConnection();
             }
-
+            //добавить условие для docid
             Statement stmt = connect.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM TERMS WHERE NAME='" + term
-                    + "' ORDER BY DOC_ID, POSITION;");//add grouping нужна ли группировка теперь?
+                    + "' ORDER BY DOC_ID, POSITION;");
             while (rs.next()) {
                 TermInfo termInfo = new TermInfo(rs.getInt("DOC_ID"), rs.getInt("POSITION"));
                 info.add(termInfo);
@@ -199,6 +199,28 @@ public class TermManager {
             Logger.getLogger(TermManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return docId;
+    }
+    public String getDocDir(String docID) {
+        String docDir=new String();
+        try {
+            //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
+            if (!connect.isValid(0)) {
+                createConnection();
+            }
+
+            Statement stmt = connect.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT PATH FROM DOCS WHERE DOC_ID='" + docID + "';");
+            if (rs.next()) {
+                docDir = rs.getString("PATH");
+            }
+            rs.close();
+
+            stmt.close();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(TermManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return docDir;
     }
 
 }

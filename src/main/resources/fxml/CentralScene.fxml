@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iu3.antiplugiat.CentralSceneController">
+   <children>
+      <Button layoutX="38.0" layoutY="16.0" mnemonicParsing="false" onAction="#handleButtonChooseFile" prefHeight="55.0" prefWidth="141.0" text="Выбрать файл.." />
+      <Button layoutX="38.0" layoutY="310.0" mnemonicParsing="false" onAction="#handleButtonAnalize" prefHeight="55.0" prefWidth="125.0" text="Анализ" />
+      <Button fx:id="loadButton" layoutX="439.0" layoutY="310.0" mnemonicParsing="false" onAction="#handleButtonLoad" prefHeight="55.0" prefWidth="125.0" text="Загрузить в базу" />
+      <VBox fx:id="dragTarget" layoutX="18.0" layoutY="88.0" onDragDone="#handleVBoxDragDone" onDragDropped="#handleVBoxDragDropped" onDragOver="#handleVBoxDragOver" prefHeight="203.0" prefWidth="568.0">
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="216.0" prefWidth="568.0" text="DRAG AND DROP">
+               <font>
+                  <Font size="36.0" />
+               </font>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </Label>
+         </children>
+      </VBox>
+      <Label fx:id="fileDirLabel" layoutX="192.0" layoutY="28.0" prefHeight="42.0" prefWidth="381.0" text="Файл не выбран">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.hwpf.usermodel.Range;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
@@ -28,6 +29,7 @@ public class DocManager {
 
     String docDir;
     int docId;
+    String plugiat;
     double uniqueAttr;
     List<String> termsQueue;
 
@@ -43,11 +45,7 @@ public class DocManager {
         termsQueue = new ArrayList<>();
 
         this.docDir = docDir;
-        termManager.addDoc(docDir);
         
-        docId = termManager.getDocId(docDir);
-        termManager.closeConnection();
-
         getTerms();
         System.out.println("Time of text processing:" + (System.nanoTime() - start));
     }
@@ -62,11 +60,12 @@ public class DocManager {
         if (fileFormat.equals("doc")) {
             termsQueue = getTockensFromDoc();
         }
+        termsQueue.forEach(t->System.out.println(t));
 
     }
 
     private String normalizeText(String text) {
-
+        
         StringBuilder nText = new StringBuilder();
         char prev = ' ';
 
@@ -90,6 +89,8 @@ public class DocManager {
                     case '\'':
                     case '_':
                     case '\t':
+                    case 'о':
+                    case '•':
                         if (prev != ' ') {
                             prev = ' ';
                             nText.append(" ");
@@ -115,14 +116,16 @@ public class DocManager {
         try {
             FileInputStream fis = new FileInputStream(new File(docDir));
             HWPFDocument doc = new HWPFDocument(fis);
+            
             WordExtractor extractor = new WordExtractor(doc);
             String[] rawText = extractor.getParagraphText();
-
+          
             for (String rawTextPtn : rawText) {
                 String[] tokenPattern = normalizeText(rawTextPtn).split(" ");
 
                 for (String token : tokenPattern) {
                     if (!token.equals("")) {
+                        //text.add(token);
                         text.add(Porter.stem(token));
                     }
                 }
@@ -148,6 +151,7 @@ public class DocManager {
 
                 for (String token : tokenPattern) {
                     if (!token.equals("")) {
+                        //text.add(token);
                         text.add(Porter.stem(token));
                     }
                 }
@@ -161,6 +165,10 @@ public class DocManager {
     public void loadToDatabase() {
 
         long start = System.nanoTime();
+        
+        termManager.addDoc(docDir);
+        docId = termManager.getDocId(docDir);
+        
         for (int i = 0; i < termsQueue.size(); i++) {
             termManager.addTerm(termsQueue.get(i), new TermInfo(docId, i));
         }
@@ -186,10 +194,11 @@ public class DocManager {
             int cur = queueManager.getIntersectNum(id);
             if (cur > max) {
                 max = cur;
+                plugiat=id.toString();
             }
-            uniqueAttr = (double) max / termsQueue.size();
-
         }
+        uniqueAttr = 1-(double) max / termsQueue.size();
+        plugiat=termManager.getDocDir(plugiat);
         queueManager.clear();
 
     }
@@ -198,10 +207,13 @@ public class DocManager {
 
         long start = System.nanoTime();
 
-        analizeDocument(4);
+        analizeDocument(5);
 
         System.out.println("Time of analizing" + (System.nanoTime() - start));
         return uniqueAttr;
+    }
+    public String getPlugiatDoc(){
+        return plugiat;
     }
 
 }

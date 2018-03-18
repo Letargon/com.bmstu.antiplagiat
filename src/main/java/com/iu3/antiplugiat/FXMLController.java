@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.input.DragEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -44,6 +45,7 @@ public class FXMLController implements Initializable {
         if (docManager!=null)
             uniqAttrLabel.setText(Double.toString(docManager.getuniqueAttr()));
     }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
