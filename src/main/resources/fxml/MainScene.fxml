@@ -5,7 +5,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iu3.antiplugiat.fxmlcontrollers.MainSceneController">
    <top>
       <MenuBar prefHeight="21.0" prefWidth="600.0" BorderPane.alignment="CENTER">
         <menus>

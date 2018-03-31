@@ -1,13 +1,14 @@
-package com.iu3.antiplugiat;
+package com.iu3.antiplugiat.fxmlcontrollers;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import com.iu3.antiplugiat.service.DocManager;
+import com.iu3.antiplugiat.service.DocMaster;
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -28,10 +29,10 @@ import javafx.stage.Stage;
  */
 public class CentralSceneController implements Initializable {
 
-    DocManager docManager;
+    DocMaster docMaster;
 
     static AnalizeBarController AN_BAR;
-    
+
     String plugiat;
 
     @FXML
@@ -57,11 +58,11 @@ public class CentralSceneController implements Initializable {
         // TODO
     }
 
-    static void setStage(Stage stage) {
+    public static void setStage(Stage stage) {
         STAGE = stage;
     }
 
-    static void setAnalizeController(AnalizeBarController anBar) {
+    public static void setAnalizeController(AnalizeBarController anBar) {
         AN_BAR = anBar;
     }
 
@@ -76,26 +77,27 @@ public class CentralSceneController implements Initializable {
         );
         File file = fileChooser.showOpenDialog(STAGE);//Указываем текущую сцену CodeNote.mainStage
         if (file != null) {
-            docManager = new DocManager(file.getPath());
+            docMaster = new DocMaster(file.getPath());
+            
             fileDirLabel.setText(file.getPath());
             AN_BAR.dropUnique();
         }
-        
 
     }
 
     @FXML
     private void handleButtonLoad(ActionEvent event) {
-        if (docManager != null) {
-            docManager.loadToDatabase();
+        if (docMaster != null) {
+            docMaster.loadToDatabase();
         }
     }
 
     @FXML
     private void handleButtonAnalize(ActionEvent event) {
-        if (docManager != null) {
-            Double uniq = docManager.getuniqueAttr();
-            String plagiat=docManager.getPlugiatDoc();
+        if (docMaster != null) {
+            docMaster.analizeDoc();
+            Double uniq = docMaster.getUniqAttr();
+            String plagiat = docMaster.getPlugiatDir();
             AN_BAR.setUniqueNum(uniq);
             AN_BAR.setplugDoc(plagiat);
         }
@@ -104,10 +106,19 @@ public class CentralSceneController implements Initializable {
 
     @FXML
     private void handleVBoxDragOver(DragEvent event) {
+        Dragboard db = event.getDragboard();
         if (event.getGestureSource() != dragTarget
-                && event.getDragboard().hasString()) {
-            /* allow for both copying and moving, whatever user chooses */
-            event.acceptTransferModes(TransferMode.ANY);
+                && db.hasFiles()) {
+            List<File> files = db.getFiles();
+
+            if (files.size() == 1) {
+                String path = files.get(0).getName();
+                String ext = path.split(".")[path.length() - 1];
+                if (ext.equals("docx") || ext.equals("doc")) /* allow for both copying and moving, whatever user chooses */ {
+                    event.acceptTransferModes(TransferMode.ANY);
+                }
+            }
+
         }
         event.consume();
     }
@@ -133,7 +144,7 @@ public class CentralSceneController implements Initializable {
     private void handleVBoxDragDone(DragEvent event) {
         Dragboard db = event.getDragboard();
         if (db.hasString()) {
-            docManager = new DocManager(db.getString());
+            docMaster = new DocMaster(db.getString());
             fileDirLabel.setText(db.getString());
         }
     }

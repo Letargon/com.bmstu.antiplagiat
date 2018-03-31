@@ -1,16 +1,17 @@
 package com.iu3.antiplugiat;
 
+import com.iu3.antiplugiat.fxmlcontrollers.CentralSceneController;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-//не поддерживает rtf
 public class MainApp extends Application {
 
     private Stage primaryStage;
@@ -25,13 +26,13 @@ public class MainApp extends Application {
             Scene scene = new Scene(mainScene);
             primaryStage.setTitle("Антиплагиат ИУ3");
             primaryStage.setScene(scene);
-            
+
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(com.iu3.antiplugiat.MainApp.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
-    public void showCentralScene() {
+    public void initCentralScene() {
         try {
 
             FXMLLoader loader = new FXMLLoader();
@@ -40,11 +41,11 @@ public class MainApp extends Application {
 
             mainScene.setCenter(centralScene);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(com.iu3.antiplugiat.MainApp.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
-    public void showAnalizeBar() {
+    public void initAnalizeBar() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/fxml/AnalizeBar.fxml"));
@@ -52,7 +53,7 @@ public class MainApp extends Application {
             CentralSceneController.setAnalizeController(loader.getController());
             mainScene.setBottom(analizeBar);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(com.iu3.antiplugiat.MainApp.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
@@ -61,20 +62,11 @@ public class MainApp extends Application {
 
         primaryStage = stage;
 
-        //Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
-
-        //Scene scene = new Scene(root);
-        //scene.getStylesheets().add("/styles/Styles.css");
-
-        //stage.setTitle("JavaFX and Maven");
-        //stage.setScene(scene);
-        //CentralSceneController.setStage(stage);
-        //FXMLController.STAGE = stage;
         initMainScene();
-        showCentralScene();
-        showAnalizeBar();
+        initCentralScene();
+        initAnalizeBar();
+        
         primaryStage.show();
-        //stage.show();
 
     }
 

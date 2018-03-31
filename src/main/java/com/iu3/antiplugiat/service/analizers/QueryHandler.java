@@ -3,87 +3,64 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.iu3.antiplugiat.service;
+package com.iu3.antiplugiat.service.analizers;
 
 import com.iu3.antiplugiat.model.TermInfo;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import com.iu3.antiplugiat.service.database.local.TermManager;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Andalon
  */
-public class QueueManager {
+class QueryHandler {
 
-    private List<String> queue;//check for another collections
+    private List<String> query;//check for another collections
     private TermManager termManager;
     private TreeSet<TermInfo> interTerms;
 
-    private int qSize = 0;
-    PrintWriter writer = null;
-    PrintWriter writer1 = null;
-
-    private void createFileWriter() {
-        try {
-            writer = new PrintWriter("interlist.txt", "UTF-8");
-            writer1 = new PrintWriter("originqueue.txt", "UTF-8");
-        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-            Logger.getLogger(QueueManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public QueueManager(List<String> queue) {
+    //for debug purposes
+    public QueryHandler() {
         termManager = new TermManager();
-        this.queue = queue;
         interTerms = new TreeSet<>();
-        if (!queue.isEmpty()) {
+    }
+
+    public QueryHandler(List<String> query) {
+        this();
+        this.query = query;
+        if (!query.isEmpty()) {
             findIntercections();
         }
-        createFileWriter();
+
     }
 
-    public QueueManager(List<String> queue, TermManager termManager) {
-        this.termManager = termManager;
-        this.queue = queue;
-        interTerms = new TreeSet<>();
-        if (!queue.isEmpty()) {
-            findIntercections();
-        }
-        createFileWriter();
+    public List<String> getQuery() {
+        return query;
     }
 
-    public QueueManager(TermManager termManager) {
-        this.termManager = termManager;
-        this.queue = new ArrayList<>();
-        interTerms = new TreeSet<>();
-
-        createFileWriter();
+    public void startSession() {
+        termManager.openConnection();
+    }
+    public void stopSession(){
+        termManager.closeConnection();
     }
 
-    public List<String> getQueue() {
-        return queue;
-    }
-
-    public void setQueue(List<String> queue) {
-        this.queue = queue;
-        if (queue.size() > 1) {
+    public void setQuery(List<String> query) {
+        this.query = query;
+        if (query.size() > 1) {
             findIntercections();
         }
     }
-//количество включений в документе
 
+    //количество включений в документе
     public int getIntersectNum(int docID) {
         int i = 0;
         for (TermInfo t : interTerms) {
@@ -93,12 +70,9 @@ public class QueueManager {
         }
         return i;
     }
-//
 
     public Set<Integer> getDocIDs() {
-        
-        writer.close();
-        writer1.close();
+
         Set<Integer> docIds = new HashSet<>();
         for (TermInfo t : interTerms) {
             docIds.add(t.getDocID());
@@ -106,7 +80,7 @@ public class QueueManager {
         return docIds;
     }
 
-    public void clear() {
+    public void flush() {
         interTerms.clear();
     }
 
@@ -119,9 +93,13 @@ public class QueueManager {
 
         ArrayList<TermInfo> curT;
         final TreeMap<TermInfo, Boolean> queueInterc = new TreeMap<>();
-        queue.forEach(t->writer1.println(t));
-        for (String cur : queue.subList(0, queue.size() - 1)) {
+
+        long s = System.nanoTime();
+
+        for (String cur : query.subList(0, query.size() - 1)) {
+
             curT = termManager.getTermInfo(cur);
+
             if (curT.isEmpty()) {
                 queueInterc.clear();
                 break;
@@ -138,9 +116,12 @@ public class QueueManager {
                     break;
                 }
             }
+
         }
-        curT = termManager.getTermInfo(queue.get(queue.size() - 1));
+
+        curT = termManager.getTermInfo(query.get(query.size() - 1));
         TreeMap<TermInfo, Boolean> inter = intercept(new ArrayList(queueInterc.keySet()), curT, true);
+
         //проблема запросов с одинаковыми словами: интерсепт заполнится вновь, но может дать те же значения,
         //т.е. размер не изменится
         if (!curT.isEmpty() && !inter.isEmpty()) {
@@ -149,13 +130,7 @@ public class QueueManager {
             if (queueInterc.size() == inter.size()) {
                 queueInterc.clear();
             }
-            if (!queueInterc.isEmpty()) {
 
-                queue.forEach(t->writer.println(t));;
-                
-                //System.out.println(queue);
-
-            }
         } else {
             queueInterc.clear();
         }
@@ -163,14 +138,8 @@ public class QueueManager {
         //необходимо задать максимальное количество включений предложения в документе,
         //по логике программы до одного на документ. 
         //проблема: необходимо добавить новый набор, если в списке уже присутствует старый
-        addLimitedList(queueInterc, queue.size(), interTerms);
-        int size = interTerms.size();
+        addLimitedList(queueInterc, query.size(), interTerms);
 
-        /*if (size % 5 != 0 || size-qSize>5) {
-            System.out.println(qSize+"   "+size);
-        }*/
-        qSize = size;
-        termManager.closeConnection();
     }
 
     private void addLimitedList(TreeMap<TermInfo, Boolean> inter, int limiter, TreeSet<TermInfo> res) {
@@ -178,7 +147,7 @@ public class QueueManager {
         int num = 1;
         int prevDocId = -1;
 
-        for (Entry<TermInfo, Boolean> cur : inter.entrySet()) {
+        for (Map.Entry<TermInfo, Boolean> cur : inter.entrySet()) {
             if (cur.getKey().getDocID() == prevDocId) {
                 num++;
             } else {
@@ -271,5 +240,4 @@ public class QueueManager {
         return (Math.abs(term1.getPos() - term2.getPos()) < x);
 
     }
-
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.iu3.antiplugiat.service;
+package com.iu3.antiplugiat.service.txtproccessing;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

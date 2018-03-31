@@ -7,14 +7,14 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iu3.antiplugiat.CentralSceneController">
+<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iu3.antiplugiat.fxmlcontrollers.CentralSceneController">
    <children>
-      <Button layoutX="38.0" layoutY="16.0" mnemonicParsing="false" onAction="#handleButtonChooseFile" prefHeight="55.0" prefWidth="141.0" text="Выбрать файл.." />
-      <Button layoutX="38.0" layoutY="310.0" mnemonicParsing="false" onAction="#handleButtonAnalize" prefHeight="55.0" prefWidth="125.0" text="Анализ" />
-      <Button fx:id="loadButton" layoutX="439.0" layoutY="310.0" mnemonicParsing="false" onAction="#handleButtonLoad" prefHeight="55.0" prefWidth="125.0" text="Загрузить в базу" />
-      <VBox fx:id="dragTarget" layoutX="18.0" layoutY="88.0" onDragDone="#handleVBoxDragDone" onDragDropped="#handleVBoxDragDropped" onDragOver="#handleVBoxDragOver" prefHeight="203.0" prefWidth="568.0">
+      <Button layoutX="38.0" layoutY="16.0" mnemonicParsing="false" onAction="#handleButtonChooseFile" prefHeight="55.0" prefWidth="141.0" text="Выбрать файл.." AnchorPane.leftAnchor="25.0" />
+      <Button layoutX="38.0" layoutY="310.0" mnemonicParsing="false" onAction="#handleButtonAnalize" prefHeight="55.0" prefWidth="125.0" text="Анализ" AnchorPane.leftAnchor="25.0" />
+      <Button fx:id="loadButton" layoutX="439.0" layoutY="310.0" mnemonicParsing="false" onAction="#handleButtonLoad" prefHeight="55.0" prefWidth="125.0" text="Загрузить в базу" AnchorPane.rightAnchor="25.0" />
+      <VBox fx:id="dragTarget" layoutY="88.0" onDragDone="#handleVBoxDragDone" onDragDropped="#handleVBoxDragDropped" onDragOver="#handleVBoxDragOver" prefHeight="203.0" prefWidth="586.0">
          <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="216.0" prefWidth="568.0" text="DRAG AND DROP">
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="203.0" prefWidth="583.0" text="DRAG AND DROP">
                <font>
                   <Font size="36.0" />
                </font>

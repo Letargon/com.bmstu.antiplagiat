@@ -1,4 +1,4 @@
-package com.iu3.antiplugiat;
+package com.iu3.antiplugiat.fxmlcontrollers;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -35,21 +35,23 @@ public class AnalizeBarController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }
-    public void dropUnique(){
+
+    public void dropUnique() {
         uniqueLabel.setText("? %");
     }
 
     public void setUniqueNum(double uniq) {
-        uniqueLabel.setText(Double.toString(uniq*100).substring(0,4)+" %");
-        
-        String red = Integer.toString((int)Math.round(255 * (1. - uniq)));
-        String green = Integer.toString((int)Math.round(255 * uniq));
+        uniqueLabel.setText(Double.toString(uniq * 100).substring(0, 4) + " %");
+
+        String red = Integer.toString((int) Math.round(255 * (1. - uniq)));
+        String green = Integer.toString((int) Math.round(255 * uniq));
         String blue = "0";
         String color = "rgb(" + red + "," + green + "," + blue + ")";
         uniquePane.setStyle("-fx-background-color:" + color);
 
     }
-    public void setplugDoc(String dir){
+
+    public void setplugDoc(String dir) {
         plugLabel.setText(dir);
     }
 
