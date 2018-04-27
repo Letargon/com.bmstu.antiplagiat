@@ -6,6 +6,7 @@
 package com.iu3.antiplugiat.service.database.local;
 
 import com.iu3.antiplugiat.model.Document;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,18 +21,19 @@ import java.util.logging.Logger;
  */
 public class DocManager extends LocalManager {
 
-    public void addDoc(String docDir) {
+    public DocManager(Connection connect){
+        super(connect);
+    }
+    public boolean addDoc(String docDir, String size) {
         try {
             //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
-            if (!connect.isValid(0)) {
-                createConnection();
-            }
 
             Statement stmt = connect.createStatement();
 
-            stmt.executeUpdate("INSERT INTO DOCS (PATH) VALUES"//check sql syntex for insert
+            stmt.executeUpdate("INSERT INTO DOCS (PATH,TSIZE) VALUES"//check sql syntex for insert
                     + "("
-                    + "'" + docDir + "'"
+                    + "'" + docDir + "' ,"
+                    + size
                     + ");");
 
             stmt.close();
@@ -39,16 +41,16 @@ public class DocManager extends LocalManager {
         } catch (SQLException ex) {
             //нужно подумать об ошибке уникальности, вывод сообщения
             Logger.getLogger(com.iu3.antiplugiat.service.database.local.DocManager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
     public int getDocId(String docDir) {
         int docId = -1;
         try {
             //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
-            if (!connect.isValid(0)) {
-                createConnection();
-            }
+
 
             Statement stmt = connect.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT DOC_ID FROM DOCS WHERE PATH='" + docDir + "';");
@@ -69,9 +71,7 @@ public class DocManager extends LocalManager {
         String docDir = new String();
         try {
             //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
-            if (!connect.isValid(0)) {
-                createConnection();
-            }
+
             Statement stmt = connect.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT PATH FROM DOCS WHERE DOC_ID='" + docID + "';");
             if (rs.next()) {
@@ -90,14 +90,11 @@ public class DocManager extends LocalManager {
     public void writePlugInfo(String docID, String uniq, String plugID) {
         try {
             //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
-            if (!connect.isValid(0)) {
-                createConnection();
-            }
 
             Statement stmt = connect.createStatement();
 
             stmt.executeUpdate("UPDATE DOCS SET"//check sql syntex for insert
-                    + " UNIQ ='" + uniq + "'"
+                    + " UNIQ ='" + uniq + "',"
                     + " PLUGID ='" + plugID + "'"
                     + " WHERE DOC_ID ='" + docID + "';");
 
@@ -115,18 +112,18 @@ public class DocManager extends LocalManager {
         String docDir = new String();
         try {
             //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
-            if (!connect.isValid(0)) {
-                createConnection();
-            }
+
             Statement stmt = connect.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM DOCS;");
             while (rs.next()) {
                 String docID = rs.getString("DOC_ID");
                 String path = rs.getString("PATH");
+                String tsize = rs.getString("TSIZE");
+
                 String uniq = rs.getString("UNIQ");
                 String plugID = rs.getString("PLUGID");
 
-                docList.add(new Document(docID, path, uniq, plugID));
+                docList.add(new Document(docID, path, tsize, uniq, plugID));
             }
             rs.close();
 
@@ -136,7 +133,24 @@ public class DocManager extends LocalManager {
             Logger.getLogger(com.iu3.antiplugiat.service.database.local.DocManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return docList;
+    }
 
+    public void deleteDoc(String docID) {
+        try {
+            //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
+
+
+            Statement stmt = connect.createStatement();
+
+            stmt.executeUpdate("DELETE FROM DOCS"//check sql syntex for insert
+                    + " WHERE DOC_ID =" + docID + ";");
+
+            stmt.close();
+
+        } catch (SQLException ex) {
+            //нужно подумать об ошибке уникальности, вывод сообщения
+            Logger.getLogger(com.iu3.antiplugiat.service.database.local.DocManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

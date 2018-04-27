@@ -112,8 +112,9 @@ public class CentralSceneController implements Initializable {
             List<File> files = db.getFiles();
 
             if (files.size() == 1) {
-                String path = files.get(0).getName();
-                String ext = path.split(".")[path.length() - 1];
+                String path = files.get(0).getAbsolutePath();
+                String[] splitted = path.split("\\.");
+                String ext = splitted[splitted.length - 1];
                 if (ext.equals("docx") || ext.equals("doc")) /* allow for both copying and moving, whatever user chooses */ {
                     event.acceptTransferModes(TransferMode.ANY);
                 }
@@ -128,9 +129,15 @@ public class CentralSceneController implements Initializable {
 
         Dragboard db = event.getDragboard();
         boolean success = false;
-        if (db.hasString()) {
-            String[] dirSplitted = db.getString().split("/");
-            dropped.setText(dirSplitted[dirSplitted.length - 1]);
+        if (db.hasFiles()) {
+            List<File> files = db.getFiles();
+            
+            dropped.setText(files.get(0).getName());
+            
+            String aPath = db.getFiles().get(0).getAbsolutePath();
+            docMaster = new DocMaster(aPath);
+            fileDirLabel.setText(aPath);
+        
             success = true;
         }
         /* let the source know whether the string was successfully 
@@ -138,15 +145,6 @@ public class CentralSceneController implements Initializable {
         event.setDropCompleted(success);
 
         event.consume();
-    }
-
-    @FXML
-    private void handleVBoxDragDone(DragEvent event) {
-        Dragboard db = event.getDragboard();
-        if (db.hasString()) {
-            docMaster = new DocMaster(db.getString());
-            fileDirLabel.setText(db.getString());
-        }
     }
 
 }

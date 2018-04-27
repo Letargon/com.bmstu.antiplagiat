@@ -18,54 +18,19 @@ import java.util.logging.Logger;
  */
 public abstract class LocalManager {
 
-    protected Connection connect;
+    final protected Connection connect;
 
-    public LocalManager() {
-        try {
-            createConnection();
-        } catch (SQLException ex) {
-            Logger.getLogger(TermManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public LocalManager(Connection connect) {
+        this.connect = connect;
         initDataBase();
     }
-
-    public void openConnection() {
-        try {
-            createConnection();
-        } catch (SQLException ex) {
-            Logger.getLogger(TermManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void closeConnection() {
-
-        try {
-            if (connect != null) {
-                connect.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(TermManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    protected void createConnection() throws SQLException {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(TermManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        String url = "jdbc:postgresql://localhost:5432/termdict";
-        String login = "Andalon";
-        String password = "qwerty";
-        connect = DriverManager.getConnection(url, login, password);
+    public Connection getConnect(){
+        return connect;
     }
 
     protected final void initDataBase() {
         try {
             //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
-            if (!connect.isValid(0)) {
-                createConnection();
-            }
 
             Statement stmt = connect.createStatement();
             //максимальная длина пути обработка исключения?
@@ -73,7 +38,9 @@ public abstract class LocalManager {
                     + "("
                     + "        DOC_ID SERIAL,"
                     + "        PATH VARCHAR(255) NOT NULL UNIQUE,"
+                    + "        TSIZE INT NOT NULL,"
                     + "        UNIQ FLOAT,"
+                    + "        PLUGID INT,"
                     + "        FOREIGN KEY (PLUGID) REFERENCES DOCS(DOC_ID),"
                     + "        PRIMARY KEY (DOC_ID)"
                     + ");");
@@ -84,7 +51,7 @@ public abstract class LocalManager {
                     + "        DOC_ID INT  NOT NULL ,"
                     + "        POSITION INT  NOT NULL ,"
                     + "        PRIMARY KEY (ID),"
-                    + "        FOREIGN KEY (DOC_ID) REFERENCES DOCS(DOC_ID)"
+                    + "        FOREIGN KEY (DOC_ID) REFERENCES DOCS(DOC_ID) ON DELETE CASCADE"
                     + ");");
 
             stmt.close();

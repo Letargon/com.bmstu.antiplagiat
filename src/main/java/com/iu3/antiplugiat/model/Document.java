@@ -5,88 +5,91 @@
  */
 package com.iu3.antiplugiat.model;
 
-import java.util.Objects;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
  *
  * @author Andalon
  */
 public class Document {
-    String docID;
-    String path;
-    String uniq;
-    String plugID;
+    
+    private final StringProperty docID = new SimpleStringProperty();
+    private final StringProperty path = new SimpleStringProperty();
+    private final StringProperty uniq = new SimpleStringProperty();
+    private final StringProperty plugID = new SimpleStringProperty();
+    private final StringProperty tsize = new SimpleStringProperty();
 
-    public Document(String docID, String path) {
-        this.docID = docID;
-        this.path = path;
+    public String getTsize() {
+        return tsize.get();
     }
 
-    public Document(String docID, String path, String uniq, String plugID) {
-        this.docID = docID;
-        this.path = path;
-        this.uniq = uniq;
-        this.plugID = plugID;
+    public void setTsize(String value) {
+        tsize.set(value);
     }
 
-    public void setDocID(String docID) {
-        this.docID = docID;
+    public StringProperty tsizeProperty() {
+        return tsize;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    
+    
+    public Document(String docID, String path, String tsize, String uniq, String plugID) {
+        this.docID.set(docID);
+        this.path.set(path);
+        this.uniq.set(uniq);
+        this.plugID.set(plugID);
+        this.tsize.set(tsize);
+        
     }
 
-    public void setUniq(String uniq) {
-        this.uniq = uniq;
-    }
-
-    public void setPlugID(String plugID) {
-        this.plugID = plugID;
-    }
-
-    public String getDocID() {
-        return docID;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public String getUniq() {
-        return uniq;
-    }
-
+    
     public String getPlugID() {
+        return plugID.get();
+    }
+
+    public void setPlugID(String value) {
+        plugID.set(value);
+    }
+
+    public StringProperty plugIDProperty() {
         return plugID;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.docID);
-        hash = 97 * hash + Objects.hashCode(this.path);
-        return hash;
+    public String getUniq() {
+        return uniq.get();
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Document other = (Document) obj;
-        if (!Objects.equals(this.docID, other.docID)) {
-            return false;
-        }
-        if (!Objects.equals(this.path, other.path)) {
-            return false;
-        }
-        return true;
-    }  
+    public void setUniq(String value) {
+        uniq.set(value);
+    }
+
+    public StringProperty uniqProperty() {
+        return uniq;
+    }
+
+    public String getPath() {
+        return path.get();
+    }
+
+    public void setPath(String value) {
+        path.set(value);
+    }
+
+    public StringProperty pathProperty() {
+        return path;
+    }
+
+    public String getDocID() {
+        return docID.get();
+    }
+
+    public void setDocID(String value) {
+        docID.set(value);
+    }
+
+    public StringProperty docIDProperty() {
+        return docID;
+    }
+    
 }

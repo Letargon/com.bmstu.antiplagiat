@@ -11,6 +11,7 @@
         <menus>
           <Menu mnemonicParsing="false" text="Tools">
             <items>
+                  <MenuItem mnemonicParsing="false" onAction="#openDocView" text="Таблица документов" />
               <MenuItem mnemonicParsing="false" text="Close" />
             </items>
           </Menu>
