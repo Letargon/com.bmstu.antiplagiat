@@ -1,10 +1,5 @@
 package com.iu3.antiplugiat.fxmlcontrollers;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 import com.iu3.antiplugiat.service.DocMaster;
 import java.io.File;
 import java.net.URL;
@@ -23,8 +18,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
- * FXML Controller class
- *
  * @author Andalon
  */
 public class CentralSceneController implements Initializable {
@@ -50,9 +43,6 @@ public class CentralSceneController implements Initializable {
     @FXML
     public static Stage STAGE;
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
@@ -75,7 +65,7 @@ public class CentralSceneController implements Initializable {
                 new FileChooser.ExtensionFilter("Doc", "*.doc"),
                 new FileChooser.ExtensionFilter("Docx", "*.docx")
         );
-        File file = fileChooser.showOpenDialog(STAGE);//Указываем текущую сцену CodeNote.mainStage
+        File file = fileChooser.showOpenDialog(STAGE);//Указываем текущую сцену
         if (file != null) {
             docMaster = new DocMaster(file.getPath());
             
@@ -115,11 +105,10 @@ public class CentralSceneController implements Initializable {
                 String path = files.get(0).getAbsolutePath();
                 String[] splitted = path.split("\\.");
                 String ext = splitted[splitted.length - 1];
-                if (ext.equals("docx") || ext.equals("doc")) /* allow for both copying and moving, whatever user chooses */ {
+                if (ext.equals("docx") || ext.equals("doc")) {
                     event.acceptTransferModes(TransferMode.ANY);
                 }
             }
-
         }
         event.consume();
     }
@@ -140,10 +129,7 @@ public class CentralSceneController implements Initializable {
         
             success = true;
         }
-        /* let the source know whether the string was successfully 
-                 * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
     }
 

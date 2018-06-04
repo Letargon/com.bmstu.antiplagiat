@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.iu3.antiplugiat.service.database.local;
 
 /**
@@ -23,12 +18,8 @@ public class ConnectionPool {
 
     private List<Connection> availableConns = Collections.synchronizedList(new ArrayList<>());
     private List<Connection> usedConns = Collections.synchronizedList(new ArrayList<>());
-    ;
-
     final private String url;
-    final static private String LOGIN = "Andalon";
-    final static private String PASSWORD = "qwerty";
-
+    
     public ConnectionPool(String url, String driver, int initConnCnt) {
         try {
             Class.forName(driver);
@@ -51,7 +42,7 @@ public class ConnectionPool {
         Connection conn  = null;
         try {
             String url = DataBaseConstants.URL;
-            conn = DriverManager.getConnection(url, LOGIN, PASSWORD);
+            conn = DriverManager.getConnection(url, DataBaseConstants.LOGIN, DataBaseConstants.PASSWORD);
         } catch (SQLException ex) {
             Logger.getLogger(ConnectionPool.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -71,7 +62,7 @@ public class ConnectionPool {
 
         Connection conn = null;
         try {
-            conn = DriverManager.getConnection(url, LOGIN, PASSWORD);
+            conn = DriverManager.getConnection(url, DataBaseConstants.LOGIN, DataBaseConstants.PASSWORD);
         } catch (SQLException ex) {
             Logger.getLogger(ConnectionPool.class.getName()).log(Level.SEVERE, null, ex);
         }

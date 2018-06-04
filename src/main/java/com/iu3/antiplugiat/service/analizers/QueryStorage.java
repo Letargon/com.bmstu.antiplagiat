@@ -1,15 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.iu3.antiplugiat.service.analizers;
 
 import com.iu3.antiplugiat.model.TermInfo;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -40,7 +33,6 @@ public class QueryStorage {
 
         int num = 1;
         int prevDocId = -1;
-        List<TermInfo> debug = new ArrayList<>();
         for (Map.Entry<TermInfo, Boolean> cur : inter.entrySet()) {
             if (cur.getKey().getDocID() == prevDocId) {
                 num++;
@@ -52,9 +44,7 @@ public class QueryStorage {
                 if (num <= limiter) {
                     if (!this.add(cur.getKey())) {
                         num--;
-                    } else {
-                        debug.add(cur.getKey());
-                    }
+                    } 
                 }
             } else {
                 num--;

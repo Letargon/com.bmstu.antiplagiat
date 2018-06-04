@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.iu3.antiplugiat.service;
 
 import com.iu3.antiplugiat.model.TermInfo;
@@ -89,7 +84,5 @@ public class DocMaster {
         termManager.setDocID(docID.toString());
         analizer.setdocID(docID);
         System.out.println("Time of load:" + (System.nanoTime() - start));
-
     }
-
 }

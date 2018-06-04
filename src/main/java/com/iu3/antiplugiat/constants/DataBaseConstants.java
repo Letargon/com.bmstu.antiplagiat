@@ -12,4 +12,6 @@ package com.iu3.antiplugiat.constants;
 public class DataBaseConstants {
     public final static String DRIVER_NAME = "org.postgresql.Driver";
     public final static String URL = "jdbc:postgresql://localhost:5432/termdict";
+    public final static String LOGIN = "andalon";
+    public final static String PASSWORD = "qwerty";
 }

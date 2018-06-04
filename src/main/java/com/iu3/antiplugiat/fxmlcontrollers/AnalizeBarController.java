@@ -13,8 +13,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
 /**
- * FXML Controller class
- *
  * @author Andalon
  */
 public class AnalizeBarController implements Initializable {
@@ -28,9 +26,6 @@ public class AnalizeBarController implements Initializable {
     @FXML
     Label plugLabel;
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO

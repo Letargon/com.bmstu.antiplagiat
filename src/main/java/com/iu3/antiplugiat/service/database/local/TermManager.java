@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.iu3.antiplugiat.service.database.local;
 
 import com.iu3.antiplugiat.model.TermInfo;
@@ -35,12 +30,12 @@ public class TermManager extends LocalManager {
         try {
 
             Statement stmt = connect.createStatement();
-            stmt.executeUpdate("INSERT INTO TERMS (NAME, DOC_ID, POSITION) VALUES"//check sql syntex for insert
+            stmt.executeUpdate("INSERT INTO TERMS (NAME, DOC_ID, POSITION) VALUES"
                     + "("
                     + "'" + name + "',"
                     + Integer.toString(term.getDocID()) + ","
                     + Integer.toString(term.getPos())
-                    + ");");//нужно органичить, чтобы связка DocId - Pos была уникальной
+                    + ");");
 
             stmt.close();
 
@@ -54,7 +49,6 @@ public class TermManager extends LocalManager {
     void removeTerm(String name, TermInfo term) {
 
         try {
-            //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
 
             Statement stmt = connect.createStatement();
             stmt.executeUpdate("DELETE FROM TERMS WHERE "
@@ -73,9 +67,6 @@ public class TermManager extends LocalManager {
     public ArrayList<TermInfo> getTermInfo(String term) {
         ArrayList<TermInfo> info = new ArrayList<>();
         try {
-            //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
-
-            //добавить условие для docid
             Statement stmt = connect.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM TERMS WHERE NAME='" + term
                     + "' AND NOT DOC_ID = " + doc_id

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.iu3.antiplugiat.service.extractors;
 
 import com.iu3.antiplugiat.service.database.local.DocManager;
@@ -86,7 +81,6 @@ public class MSWordExtractor {
         }
         return tokenizer.getTokens();
     }
-//последнее и первое слово в ячейках склеиваются
 
     private List<String> getTokensFromDocx() {
 

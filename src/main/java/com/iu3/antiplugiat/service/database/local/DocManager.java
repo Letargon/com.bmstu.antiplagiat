@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.iu3.antiplugiat.service.database.local;
 
 import com.iu3.antiplugiat.model.Document;
@@ -26,7 +21,6 @@ public class DocManager extends LocalManager {
     }
     public boolean addDoc(String docDir, String size) {
         try {
-            //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
 
             Statement stmt = connect.createStatement();
 
@@ -39,7 +33,6 @@ public class DocManager extends LocalManager {
             stmt.close();
 
         } catch (SQLException ex) {
-            //нужно подумать об ошибке уникальности, вывод сообщения
             Logger.getLogger(com.iu3.antiplugiat.service.database.local.DocManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -49,8 +42,6 @@ public class DocManager extends LocalManager {
     public int getDocId(String docDir) {
         int docId = -1;
         try {
-            //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
-
 
             Statement stmt = connect.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT DOC_ID FROM DOCS WHERE PATH='" + docDir + "';");
@@ -70,8 +61,6 @@ public class DocManager extends LocalManager {
     public String getDocDir(String docID) {
         String docDir = new String();
         try {
-            //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
-
             Statement stmt = connect.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT PATH FROM DOCS WHERE DOC_ID='" + docID + "';");
             if (rs.next()) {
@@ -89,11 +78,10 @@ public class DocManager extends LocalManager {
 
     public void writePlugInfo(String docID, String uniq, String plugID) {
         try {
-            //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
 
             Statement stmt = connect.createStatement();
 
-            stmt.executeUpdate("UPDATE DOCS SET"//check sql syntex for insert
+            stmt.executeUpdate("UPDATE DOCS SET"
                     + " UNIQ ='" + uniq + "',"
                     + " PLUGID ='" + plugID + "'"
                     + " WHERE DOC_ID ='" + docID + "';");
@@ -101,7 +89,6 @@ public class DocManager extends LocalManager {
             stmt.close();
 
         } catch (SQLException ex) {
-            //нужно подумать об ошибке уникальности, вывод сообщения
             Logger.getLogger(com.iu3.antiplugiat.service.database.local.DocManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -111,8 +98,6 @@ public class DocManager extends LocalManager {
 
         String docDir = new String();
         try {
-            //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
-
             Statement stmt = connect.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM DOCS;");
             while (rs.next()) {
@@ -137,8 +122,6 @@ public class DocManager extends LocalManager {
 
     public void deleteDoc(String docID) {
         try {
-            //createdb -D pg_default -E UTF8 -O Andalon --locale=Russian_Russia.1251 termdict
-
 
             Statement stmt = connect.createStatement();
 
@@ -148,7 +131,6 @@ public class DocManager extends LocalManager {
             stmt.close();
 
         } catch (SQLException ex) {
-            //нужно подумать об ошибке уникальности, вывод сообщения
             Logger.getLogger(com.iu3.antiplugiat.service.database.local.DocManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

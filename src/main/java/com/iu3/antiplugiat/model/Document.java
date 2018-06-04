@@ -32,18 +32,14 @@ public class Document {
         return tsize;
     }
 
-    
-    
     public Document(String docID, String path, String tsize, String uniq, String plugID) {
         this.docID.set(docID);
         this.path.set(path);
         this.uniq.set(uniq);
         this.plugID.set(plugID);
-        this.tsize.set(tsize);
-        
+        this.tsize.set(tsize);        
     }
 
-    
     public String getPlugID() {
         return plugID.get();
     }
@@ -90,6 +86,5 @@ public class Document {
 
     public StringProperty docIDProperty() {
         return docID;
-    }
-    
+    }    
 }

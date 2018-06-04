@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.iu3.antiplugiat.fxmlcontrollers;
 
-import com.iu3.antiplugiat.constants.DataBaseConstants;
 import com.iu3.antiplugiat.fxmlcontrollers.fxmlobjects.DeleteButtonCell;
 import com.iu3.antiplugiat.model.Document;
 import com.iu3.antiplugiat.service.database.local.ConnectionPool;
@@ -21,8 +15,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 /**
- * FXML Controller class
- *
  * @author Andalon
  */
 public class DocumentViewController implements Initializable {
@@ -43,12 +35,7 @@ public class DocumentViewController implements Initializable {
     TableColumn<Document, String> tsizeColumn;
     @FXML
     TableColumn<Document, String> delColumn;
-    
-    
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
@@ -65,8 +52,6 @@ public class DocumentViewController implements Initializable {
         
         ObservableList<Document> docList = FXCollections.observableArrayList(docManager.getDocumentList());
         ConnectionPool.closeConnection(docManager.getConnect());
-        tableView.setItems(docList);
-        
+        tableView.setItems(docList);   
     }
-
 }
